@@ -161,7 +161,14 @@ void cpu() {
     // Set up the signal handler for SIGUSR2
     struct sigaction sa;
     sa.sa_handler = sigusr_handler;
-    sigaction(SIGUSR2, &sa, NULL);
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+
+    // Register the signal handler
+    if (sigaction(SIGUSR1, &sa, NULL) == -1) {
+        perror("sigaction");
+        return 1;
+    }
 
     for (int i = 1; i <= 10; i++) {
         // puase until got sigusr2
