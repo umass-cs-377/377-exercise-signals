@@ -114,3 +114,86 @@ int main() {
 }
 ```
 
+## Part 3
+While the signal function is straightforward to use, it suffers from portability issues, particularly in cases involving slow system
+calls (refer to 'man 2 signal' for more information). To address this limitation, Linux introduced the sigaction function, which
+offers a more robust approach to handling signals.
+
+Linux provides various predefined signals with specific behaviors, but it also grants users the flexibility to define custom 
+actions for `SIGUSR1` and `SIGUSR2` signals.
+
+In this illustrative example, we will create a child process using fork(). The child process will iterate ten times, pausing until it 
+receives a `SIGUSR2` signal. Upon completing its iterations, the child will signal the parent with `SIGUSER1` to indicate its completion. 
+Meanwhile, the parent will continuously loop until the child has finished, as determined by the global variable 'run.' During each iteration, 
+the parent will sleep for one second and then send a `SIGUSR2` signal to the child.
+
+One way to conceptualize this scenario is in the context of a scheduler. The scheduler (the child) responds to timer interrupts (as received 
+from the parent), leading to a context switch. Your objective is to implement the two functions, `cpu()` and `kernel()`, as directed by the comments.
+
+
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <iostream>
+#include<sys/wait.h>
+
+using namespace std;
+
+int run = 1;
+pid_t child_pid;
+
+// Signal handler for SIGUSR1
+void sigusr_handler(int signum) {
+    
+    if (signum == SIGUSR1) { 
+        cout << "Kernel received SIGUSR1 signal from child. Setting run=0." << endl;
+        run = 0;
+    }
+
+    if (signum == SIGUSR2) {
+        cout << "CPU received SIGUSR2, do context switch" << endl;
+    }
+}
+
+void cpu() {
+    // Set up the signal handler for SIGUSR2
+    struct sigaction sa;
+    sa.sa_handler = sigusr_handler;
+    sigaction(SIGUSR2, &sa, NULL);
+
+    for (int i = 1; i <= 10; i++) {
+        // puase until got sigusr2
+    }
+    // send signal to parent
+
+}
+
+void kernel() {
+    // Set up the signal handler for SIGUSR1
+    
+
+    // TODO: Loop until run == 0
+    // sleep (1)
+    // send signal to child
+
+}
+
+int main() {
+
+    // Fork a child process
+    if ((child_pid = fork()) < 0) {
+        exit(1);
+    }
+
+    if (child_pid == 0) {
+        cpu();
+    } else {
+        kernel();
+        waitpid(child_pid, NULL, 0);
+    }
+
+    return 0;
+}
+```
