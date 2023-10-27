@@ -7,22 +7,23 @@
 using namespace std;
 
 void sig_alarm(int signo) {
-    cout << "interrupted" << endl;
+    cout << "WAKE UP" << endl;
 }
 
-void my_sleep(){
-    // implement sleep using alarm/puase
+void my_sleep(int time){
+    // implement sleep using alarm/pause
 }
 
 int main() {
 
-    if (signal(SIGINT, sig_alarm) == SIG_ERR) {
+    if (signal(SIGALRM, sig_alarm) == SIG_ERR) {
         exit(1);
     }
 
     cout << "Going to sleep!" << endl;
 
-    sleep(2);
+    alarm(4);
+    sleep(10);
 
     cout << "Where is my coffee? " << endl;
 }

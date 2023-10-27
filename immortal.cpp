@@ -7,12 +7,7 @@
 using namespace std;
 
 void sig_int(int signo) {
-    if (signo == SIGINT)
-        cout << "I AM IMMORTAL!!!" << endl;
-}
-
-void my_sleep(){
-    // implement sleep using alarm/puase
+    cout << "I AM IMMORTAL!!!" << endl;
 }
 
 int main() {
@@ -21,7 +16,8 @@ int main() {
         exit(1);
     }
 
-    while (1) {
-        // do nothing
+    int i = 0;
+    while (i++ < 20) {
+        sleep(1);
     }
 }

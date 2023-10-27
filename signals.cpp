@@ -7,44 +7,46 @@
 
 using namespace std;
 
-// Global variable to control the parent's loop
 int run = 1;
+pid_t child_pid;
 
 // Signal handler for SIGUSR1
 void sigusr_handler(int signum) {
-    printf("Parent received SIGUSR1 signal from child. Setting run=0.\n");
     
-    if (signum == SIGUSR1) {
+    if (signum == SIGUSR1) { 
         cout << "Kernel received SIGUSR1 signal from child. Setting run=0." << endl;
+        run = 0;
     }
 
     if (signum == SIGUSR2) {
-        cout << "CPU received SIGUSR2, waking up" << endl;
+        cout << "CPU received SIGUSR2, do context switch" << endl;
     }
 }
 
 void cpu() {
+    // Set up the signal handler for SIGUSR2
+    struct sigaction sa;
+    sa.sa_handler = sigusr_handler;
+    sigaction(SIGUSR2, &sa, NULL);
+
     for (int i = 1; i <= 10; i++) {
-        printf("Child: Loop %d\n", i);
         // puase until got sigusr2
     }
     // send signal to parent
+
 }
 
 void kernel() {
+    // Set up the signal handler for SIGUSR1
+    
 
     // TODO: Loop until run == 0
     // sleep (1)
     // send signal to child
+
 }
 
 int main() {
-    // Set up the signal handler for SIGUSR1
-    struct sigaction sa;
-    sa.sa_handler = sigusr_handler;
-    sigaction(SIGUSR1, &sa, NULL);
-
-    pid_t child_pid;
 
     // Fork a child process
     if ((child_pid = fork()) < 0) {
@@ -55,7 +57,7 @@ int main() {
         cpu();
     } else {
         kernel();
-        wait(&child_pid);
+        waitpid(child_pid, NULL, 0);
     }
 
     return 0;
