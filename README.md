@@ -72,3 +72,45 @@ int main() {
     }
 }
 ```
+
+## Part 2
+
+Occasionally, it can be beneficial for a program to trigger a signal within its own execution. This can be achieved using the 
+`alarm(unsigned int seconds)` function. This function accepts the number of seconds from the current moment to set an alarm. If the 
+provided value is greater than 0, it schedules an alarm. If the value is 0, it cancels all pending alarms.
+
+Another valuable function is `pause()`. This function will remain in a sleep state indefinitely, or until a signal is received that 
+either terminates the process or triggers the execution of a signal-handling function.
+
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <iostream>
+
+using namespace std;
+
+void sig_alarm(int signo) {
+    cout << "WAKE UP" << endl;
+}
+
+void my_sleep(int time){
+    // implement sleep using alarm/pause
+}
+
+int main() {
+
+    if (signal(SIGALRM, sig_alarm) == SIG_ERR) {
+        exit(1);
+    }
+
+    cout << "Going to sleep!" << endl;
+
+    alarm(4);
+    sleep(10);
+
+    cout << "Where is my coffee? " << endl;
+}
+```
+
