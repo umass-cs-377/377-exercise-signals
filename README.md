@@ -165,7 +165,7 @@ void cpu() {
     sa.sa_flags = 0;
 
     // Register the signal handler
-    if (sigaction(SIGUSR1, &sa, NULL) == -1) {
+    if (sigaction(SIGUSR2, &sa, NULL) == -1) {
         perror("sigaction");
         return 1;
     }
